@@ -8,7 +8,7 @@ public class SdkConfig {
 
 
 
-    //    The design goals here are that is should be immutable and user cannot forget required fields
+    //    The design goals here are that it should be immutable and user cannot forget required fields
     private final String baseUrl;
     private final String environment;
 
