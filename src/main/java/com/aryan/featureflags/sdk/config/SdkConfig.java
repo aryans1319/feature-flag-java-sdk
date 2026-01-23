@@ -44,7 +44,7 @@ public class SdkConfig {
         public SdkConfig build(){
             Objects.requireNonNull(baseUrl, "baseUrl must be set");
             Objects.requireNonNull(environment," environment must be set" );
-                    return new SdkConfig(this);
+            return new SdkConfig(this);
         }
 
 

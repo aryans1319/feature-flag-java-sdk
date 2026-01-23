@@ -9,6 +9,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.util.Map;
+import java.util.Objects;
 
 public class HttpEvaluator {
 
@@ -16,50 +18,55 @@ public class HttpEvaluator {
     private final HttpClient httpClient;
     private final ObjectMapper objectMapper;
 
-
     public HttpEvaluator(SdkConfig sdkConfig) {
-        this.sdkConfig = sdkConfig;
+        this.sdkConfig = Objects.requireNonNull(
+                sdkConfig, "SdkConfig cannot be null"
+        );
         this.httpClient = HttpClient.newHttpClient();
         this.objectMapper = new ObjectMapper();
     }
 
     public boolean evaluate(String featureKey, FeatureContext context) {
         try {
-//            build url
+            // Build URL
             String url = String.format(
                     "%s/api/features/%s/evaluate?env=%s",
                     sdkConfig.getBaseUrl(),
                     featureKey,
                     sdkConfig.getEnvironment()
-
             );
-//            Serializing FeatureContext
-            String requestBody = objectMapper.writeValueAsString(context.getAttributes());
 
-//            Building HTTP request
+            // Backend expects { "attributes": { ... } }
+            Map<String, Object> payload =
+                    Map.of("attributes", context.getAttributes());
 
+            String requestBody =
+                    objectMapper.writeValueAsString(payload);
+
+            // Build HTTP request
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
-//              sending the request
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-//            Handling http errors
+            // Send request
+            HttpResponse<String> response =
+                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+
+            // Handle HTTP errors
             if (response.statusCode() != 200) {
                 throw new SdkException(
                         "Feature evaluation failed with status: " + response.statusCode()
                 );
-
-
             }
+
             return Boolean.parseBoolean(response.body());
 
         } catch (Exception e) {
-
-            throw new SdkException("Failed to evaluate feature flag");
+            throw new SdkException(
+                    "Failed to evaluate feature flag", e
+            );
         }
-
     }
 }
