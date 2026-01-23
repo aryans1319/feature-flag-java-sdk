@@ -3,6 +3,7 @@ package com.aryan.featureflags.sdk.transport;
 import com.aryan.featureflags.sdk.config.SdkConfig;
 import com.aryan.featureflags.sdk.context.FeatureContext;
 import com.aryan.featureflags.sdk.exception.SdkException;
+import com.aryan.featureflags.sdk.model.EvaluationResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.net.URI;
@@ -52,7 +53,10 @@ public class HttpEvaluator {
 
             // Send request
             HttpResponse<String> response =
-                    httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+                    httpClient.send(
+                            request,
+                            HttpResponse.BodyHandlers.ofString()
+                    );
 
             // Handle HTTP errors
             if (response.statusCode() != 200) {
@@ -61,7 +65,14 @@ public class HttpEvaluator {
                 );
             }
 
-            return Boolean.parseBoolean(response.body());
+            // ✅ CORRECT JSON DESERIALIZATION
+            EvaluationResponse evalResponse =
+                    objectMapper.readValue(
+                            response.body(),
+                            EvaluationResponse.class
+                    );
+
+            return evalResponse.isEnabled();
 
         } catch (Exception e) {
             throw new SdkException(

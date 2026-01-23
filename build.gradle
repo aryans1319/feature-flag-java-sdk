@@ -1,5 +1,6 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 group = 'com.aryan.featureflags'
@@ -18,4 +19,16 @@ repositories {
 dependencies {
     // no dependencies yet
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.16.1'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            groupId = 'com.aryan'
+            artifactId = 'feature-flag-sdk'
+            version = '1.0.0'
+        }
+    }
 }
