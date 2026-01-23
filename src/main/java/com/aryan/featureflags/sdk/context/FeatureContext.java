@@ -45,6 +45,9 @@ public final class FeatureContext {
          */
         public Builder userId(String userId) {
             Objects.requireNonNull(userId, "userId cannot be null");
+            if (userId.isBlank()) {
+                throw new IllegalArgumentException("userId cannot be blank");
+            }
             attributes.put("userId", userId);
             return this;
         }
@@ -54,6 +57,9 @@ public final class FeatureContext {
          */
         public Builder attribute(String key, Object value) {
             Objects.requireNonNull(key, "attribute key cannot be null");
+            if (key.isBlank()) {
+                throw new IllegalArgumentException("attribute key cannot be blank");
+            }
             Objects.requireNonNull(value, "attribute value cannot be null");
             attributes.put(key, value);
             return this;
@@ -63,6 +69,12 @@ public final class FeatureContext {
          * Builds an immutable FeatureContext.
          */
         public FeatureContext build() {
+            if (attributes.isEmpty()) {
+                throw new IllegalStateException(
+                        "FeatureContext must contain at least one attribute"
+                );
+            }
+
             return new FeatureContext(
                     Collections.unmodifiableMap(new HashMap<>(attributes))
             );
