@@ -34,7 +34,7 @@ public class HttpEvaluator {
                     "%s/api/features/%s/evaluate?env=%s",
                     sdkConfig.getBaseUrl(),
                     featureKey,
-                    sdkConfig.getEnvironment()
+                    sdkConfig.getEnvironment().name()
             );
 
             // Backend expects { "attributes": { ... } }
