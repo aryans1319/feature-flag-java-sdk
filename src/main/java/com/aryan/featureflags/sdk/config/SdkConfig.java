@@ -10,10 +10,10 @@ public class SdkConfig {
 
     //    The design goals here are that it should be immutable and user cannot forget required fields
     private final String baseUrl;
-    private final String environment;
+    private final Environment environment;
 
 
-    public SdkConfig(Builder builder) {
+    private SdkConfig(Builder builder) {
         this.baseUrl = builder.baseUrl;
         this.environment = builder.environment;
     }
@@ -21,21 +21,32 @@ public class SdkConfig {
         return baseUrl;
     }
 
-    public String getEnvironment() {
+    public Environment getEnvironment() {
         return environment;
+    }
+
+    public enum Environment{
+        DEV,
+        STAGING,
+        PROD
     }
 //    Builder here acts a temporary mutable object
 
     public static final class Builder{
         private String baseUrl;
-        private String environment;
+        private Environment environment;
 
         public Builder baseUrl(String baseUrl){
             Objects.requireNonNull(baseUrl, "baseUrl cannot be null");
+            if (!baseUrl.startsWith("http")) {
+                throw new IllegalArgumentException(
+                        "baseUrl must start with http or https"
+                );
+            }
             this.baseUrl= baseUrl;
             return this;
         }
-        public Builder environment(String environment){
+        public Builder environment(Environment environment){
             Objects.requireNonNull(environment, "environment cannot be null");
             this.environment= environment;
             return this;
