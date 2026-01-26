@@ -48,6 +48,7 @@ public class HttpEvaluator {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create(url))
                     .header("Content-Type", "application/json")
+                    .header("Authorization", "Bearer " + sdkConfig.getApiKey())
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
