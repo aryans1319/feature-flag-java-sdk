@@ -45,10 +45,18 @@ public class HttpEvaluator {
                     objectMapper.writeValueAsString(payload);
 
             // Build HTTP request
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest.Builder builder = HttpRequest.newBuilder()
                     .uri(URI.create(url))
-                    .header("Content-Type", "application/json")
-                    .header("Authorization", "Bearer " + sdkConfig.getApiKey())
+                    .header("Content-Type", "application/json");
+
+            if (sdkConfig.getApiKey() != null) {
+                builder.header(
+                        "Authorization",
+                        "Bearer " + sdkConfig.getApiKey()
+                );
+            }
+
+            HttpRequest request = builder
                     .POST(HttpRequest.BodyPublishers.ofString(requestBody))
                     .build();
 
@@ -81,4 +89,5 @@ public class HttpEvaluator {
             );
         }
     }
+
 }
